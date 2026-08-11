@@ -1,6 +1,6 @@
 # Debifi QA — Automated Regression Tests
 
-Playwright regression tests for the Debifi web application, developed as part of a QA technical assignment. The suite covers three confirmed defects: a SQL injection vulnerability in the search feature, a stored XSS vulnerability in the post body, and an authorization (IDOR) protection on post write operations.
+Playwright regression tests for the Debifi web application, developed as part of a QA technical assignment. The suite covers three confirmed defects across **3 test suites and 5 test scenarios**: a SQL injection vulnerability in the search feature (3 payloads), a stored XSS vulnerability in the post body (1 scenario), and an authorization (IDOR) protection on post write operations (1 scenario).
 
 ---
 
@@ -23,8 +23,7 @@ Playwright regression tests for the Debifi web application, developed as part of
 | `tests/stored-xss.spec.ts` | BUG-07 | FAIL | Verifies XSS payload in post body is not executed |
 | `tests/authorization.spec.ts` | POST-11 / POST-12 | PASS | Verifies server rejects cross-user PATCH and DELETE requests |
 
-**Current state:** SQL injection and XSS tests fail — these bugs are confirmed open.
-The authorization test passes — it is a regression guard to ensure protection is not accidentally removed.
+**Execution result: 3 FAIL / 2 PASS** across 5 test scenarios. The sql-injection suite (2/3 payloads fail) and the stored-xss suite confirm open defects. The authorization suite passes — it is a regression guard to ensure protection is not accidentally removed.
 
 ---
 
