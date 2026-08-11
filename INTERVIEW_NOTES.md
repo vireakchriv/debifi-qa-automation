@@ -28,9 +28,9 @@ If the suite grew to 20+ tests, adding a `pages/` directory with `HomePage`, `Po
 
 ---
 
-## 4. Pourquoi des fixtures plutôt que des before/after hooks ?
+## 4. Pourquoi des helper functions plutôt que des before/after hooks ?
 
-`beforeEach` hooks run invisibly before each test. When a test fails, you have to trace back through the hook to understand the preconditions. Helper functions called explicitly inside each test (`await signUp(page, user)`) are part of the test's own code — any reader can follow the full flow top to bottom. They also compose freely: the IDOR test calls `signUp` twice with different users on different contexts, which a shared hook can't express cleanly.
+Note: `fixtures/auth.fixture.ts` contains plain async helper functions — not Playwright fixtures in the `test.extend()` sense. The choice was deliberate: `beforeEach` hooks run invisibly before each test. When a test fails, you have to trace back through the hook to understand the preconditions. Helper functions called explicitly inside each test (`await signUp(page, user)`) are part of the test's own code — any reader can follow the full flow top to bottom. They also compose freely: the IDOR test calls `signUp` twice with different users on different contexts, which a shared hook can't express cleanly.
 
 ---
 

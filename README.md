@@ -9,7 +9,7 @@ Playwright regression tests for the Debifi web application, developed as part of
 | Tool | Version | Role |
 |------|---------|------|
 | [Playwright](https://playwright.dev) | ^1.46 | Browser automation and test runner |
-| TypeScript | ^5.x | Type safety across test and helper code |
+| TypeScript | 7.x | Type safety across test and helper code |
 | Node.js | 20+ | Runtime |
 | dotenv | ^16 | Local environment variable loading |
 
@@ -153,12 +153,13 @@ The report is saved to `playwright-report/`. It is git-ignored.
 ## CI/CD
 
 A GitHub Actions workflow is provided at `.github/workflows/playwright.yml`.
-It installs dependencies, installs Playwright browsers, and runs the test suite.
+It installs Node dependencies, installs the Playwright Chromium browser, and runs the test suite.
 
-**Requirement:** the workflow needs a running Debifi instance.
-Set the `BASE_URL` repository secret in GitHub to point to a deployed staging environment.
+**Important:** the workflow requires a running Debifi instance to execute against. The workflow itself does not start the application. To use it:
+- Set the `BASE_URL` repository secret in GitHub to point to a pre-deployed staging environment.
+- The Debifi application must be accessible at that URL before the test step runs.
 
-For a fully automated CI pipeline that also starts the application, add a step to clone the Debifi repo and run `docker compose up -d` before the test step. See the comments in `playwright.yml` for a template.
+See the comments in `.github/workflows/playwright.yml` for options on how to integrate application startup into the CI pipeline.
 
 ---
 
@@ -187,7 +188,7 @@ Each test creates its own unique user at runtime using `generateUser()` (timesta
 - No pre-seeded database state required
 - No cleanup needed — each run creates fresh users
 
-The `signUp()` and `signIn()` helpers in `fixtures/auth.fixture.ts` are plain async functions called directly in each test. The IDOR test uses two separate `browser.newContext()` calls — each context has its own isolated cookie jar, providing truly independent sessions for User A and User B.
+The `signUp()` and `signIn()` functions in `fixtures/auth.fixture.ts` are plain async helper functions called directly in each test — not Playwright fixtures in the `test.extend()` sense. The IDOR test uses two separate `browser.newContext()` calls — each context has its own isolated cookie jar, providing truly independent sessions for User A and User B.
 
 ### How test data is isolated
 
@@ -212,5 +213,5 @@ A "bug reproduction" test is only useful until the bug is fixed — then it pass
 - **No database cleanup.** Test users and posts accumulate in the database across runs. This is acceptable for a local assignment context; a production suite would use database transactions or a teardown API.
 - **Single browser.** Tests run on Chromium only. Cross-browser coverage was provided separately via manual smoke testing on Brave.
 - **SQL injection scope.** The SQL injection test verifies the crash behavior (single-quote input → PG::SyntaxError). It does not prove that a fix prevents *all* forms of SQL injection — that would require database-level inspection.
-- **XSS scope.** The XSS test uses a `<script>alert()>` payload. Attribute-based XSS or CSS injection are not covered.
+- **XSS scope.** The XSS test uses a `<script>alert('XSS')</script>` payload. Attribute-based XSS or CSS injection are not covered.
 - **No API testing.** The application's routes are tested through the browser only. No HTTP-level testing of response headers, CORS, or authentication tokens was performed.
