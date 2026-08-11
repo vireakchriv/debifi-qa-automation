@@ -1,0 +1,62 @@
+name: Playwright Regression Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # IMPORTANT — Application dependency
+    #
+    # These tests run against a live Debifi instance. Two options:
+    #
+    # Option A (recommended for team CI): deploy Debifi to a staging environment
+    #   and set the BASE_URL repository secret to point to it.
+    #
+    # Option B (self-hosted or local): extend this workflow to clone the Debifi
+    #   repo, run `docker compose up -d`, and wait for the app to be ready
+    #   before executing the tests. Example step:
+    #
+    #   - name: Start Debifi application
+    #     run: |
+    #       git clone https://github.com/<org>/debifi-app ./app
+    #       cd app && docker compose up -d
+    #       npx wait-on http://localhost:3000 --timeout 60000
+    #
+    # If neither option is configured, tests will fail to connect to the app.
+    # ─────────────────────────────────────────────────────────────────────────
+
+    steps:
+      - name: Checkout test repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Run Playwright tests
+        env:
+          BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:3000' }}
+        run: npx playwright test
+
+      - name: Upload HTML test report
+        if: always() # upload even on test failure so failures can be investigated
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

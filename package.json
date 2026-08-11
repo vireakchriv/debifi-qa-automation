@@ -1,0 +1,17 @@
+{
+  "name": "debifi-qa-automation",
+  "version": "1.0.0",
+  "description": "Playwright regression tests for Debifi QA assignment — BUG-07, BUG-08, POST-11/12",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:report": "npx playwright show-report",
+    "test:debug": "npx playwright test --debug"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.46.0",
+    "@types/node": "^22.0.0",
+    "dotenv": "^16.4.5",
+    "typescript": "^7.0.2"
+  }
+}
