@@ -69,7 +69,7 @@ No `pages/` directory: Page Object Model was intentionally omitted for a suite o
 
 ```bash
 # 1. Clone this repository
-git clone https://github.com/<your-username>/debifi-qa-automation.git
+git clone https://github.com/vireakchriv/debifi-qa-automation.git
 cd debifi-qa-automation
 
 # 2. Install Node dependencies
